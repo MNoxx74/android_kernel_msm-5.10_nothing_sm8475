@@ -93,7 +93,7 @@ bool __init add_lazy_initcall(initcall_t fn, char modname[], char filename[])
 
 	mutex_lock(&lazy_initcall_mutex);
 
-	pr_info("adding lazy_initcalls[%d] from %s - %s\n",
+	pr_debug("adding lazy_initcalls[%d] from %s - %s\n",
 				counter, modname, filename);
 
 	lazy_initcalls[counter].fn = fn;

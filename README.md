@@ -19,6 +19,10 @@
 - NOS 2.5.6
   - No update
 
+- NOS 2.6
+  - No update
+
+
 # How do I submit patches to Android Common Kernels
 
 1. BEST: Make all of your changes to upstream Linux. If appropriate, backport to the stable releases.

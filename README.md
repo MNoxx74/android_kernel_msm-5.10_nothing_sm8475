@@ -19,7 +19,10 @@
 - NOS 2.5.6
   - No update
 
-- NOS 2.6
+- NOS 2.6(Pong-U2.6-240628-0430)
+  - No update
+
+- NOS 2.6(Pong-U2.6-240828-1751)
   - No update
 
 

@@ -987,6 +987,13 @@ static int xhci_invalidate_cancelled_tds(struct xhci_virt_ep *ep)
 	unsigned int		slot_id = ep->vdev->slot_id;
 	int			err;
 
+	/*
+	 * This is not going to work if the hardware is changing its dequeue
+	 * pointers as we look at them. Completion handler will call us later.
+	 */
+	if (ep->ep_state & SET_DEQ_PENDING)
+		return 0;
+
 	xhci = ep->xhci;
 
 	list_for_each_entry_safe(td, tmp_td, &ep->cancelled_td_list, cancelled_td_list) {
@@ -1487,8 +1494,21 @@ cleanup:
 	ep->ep_state &= ~SET_DEQ_PENDING;
 	ep->queued_deq_seg = NULL;
 	ep->queued_deq_ptr = NULL;
-	/* Restart any rings with pending URBs */
-	ring_doorbell_for_active_rings(xhci, slot_id, ep_index);
+
+	/* Check for deferred or newly cancelled TDs */
+	if (!list_empty(&ep->cancelled_td_list)) {
+		xhci_dbg(ep->xhci, "%s: Pending TDs to clear, continuing with invalidation\n",
+			 __func__);
+		xhci_invalidate_cancelled_tds(ep);
+		/* Try to restart the endpoint if all is done */
+		ring_doorbell_for_active_rings(xhci, slot_id, ep_index);
+		/* Start giving back any TDs invalidated above */
+		xhci_giveback_invalidated_tds(ep);
+	} else {
+		/* Restart any rings with pending URBs */
+		xhci_dbg(ep->xhci, "%s: All TDs cleared, ring doorbell\n", __func__);
+		ring_doorbell_for_active_rings(xhci, slot_id, ep_index);
+	}
 }
 
 static void xhci_handle_cmd_reset_ep(struct xhci_hcd *xhci, int slot_id,

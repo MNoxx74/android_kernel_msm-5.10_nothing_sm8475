@@ -25,6 +25,8 @@
 - NOS 2.6(Pong-U2.6-240828-1751)
   - No update
 
+- NOS 2.6(Pong-U2.6-241016-1700)
+  - No update
 
 # How do I submit patches to Android Common Kernels
 

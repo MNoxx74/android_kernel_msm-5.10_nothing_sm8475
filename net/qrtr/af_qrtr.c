@@ -2124,12 +2124,12 @@ static int __init qrtr_proto_init(void)
 		return rc;
 
 	rc = sock_register(&qrtr_family);
-	if (rc) {
-		proto_unregister(&qrtr_proto);
-		return rc;
-	}
+	if (rc)
+		goto err_proto;
 
-	qrtr_ns_init();
+	rc = qrtr_ns_init();
+	if (rc)
+		goto err_sock;
 
 	qrtr_backup_init();
 	qrtr_debug_init();
